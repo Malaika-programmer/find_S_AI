@@ -1,0 +1,51 @@
+# ==========================================
+# Practical 1: Find-S Algorithm
+# Goal: Find the most specific hypothesis
+# ==========================================
+
+# Dataset: [Has Fruit, Leaf Shape, Bark, Thorny, Edible]
+# 'YES' indicates an edible tree (Positive Example)
+# 'NO' indicates a non-edible tree (Negative Example)
+tree_dataset = [
+    ['YES', 'Oval', 'Smooth', 'NO', 'YES'],    # Positive
+    ['YES', 'Pointed', 'Rough', 'NO', 'YES'], # Positive
+    ['NO',  'Oval', 'Smooth', 'YES', 'NO'],   # Negative
+    ['YES', 'Heart', 'Rough', 'NO', 'YES']    # Positive
+]
+
+def find_s_algorithm(data):
+    # Initialize hypothesis with 'phi' (most specific state) [cite: 76, 79]
+    hypothesis = ['phi', 'phi', 'phi', 'phi']
+    
+    # Find the first positive example to initialize the hypothesis [cite: 69]
+    for row in data:
+        if row[-1] == 'YES':
+            hypothesis = row[:-1].copy()
+            break
+            
+    print(f"Initial Hypothesis: {hypothesis}\n")
+
+    # Process each example in the dataset [cite: 82]
+    for i, row in enumerate(data):
+        features = row[:-1]
+        target = row[-1]
+        
+        # Find-S only learns from positive examples [cite: 68, 80]
+        if target == 'YES':
+            for j in range(len(hypothesis)):
+                # If current attribute doesn't match the example, generalize to '?' [cite: 72, 81]
+                if features[j] != hypothesis[j]:
+                    hypothesis[j] = '?'
+            print(f"Ex {i+1} [POSITIVE]: Rule updated to -> {hypothesis}")
+        else:
+            # Negative examples are ignored [cite: 80, 92]
+            print(f"Ex {i+1} [NEGATIVE]: Rule ignored   -> {hypothesis}")
+            
+    return hypothesis
+
+if __name__ == "__main__":
+    final_rule = find_s_algorithm(tree_dataset)
+    print("\n" + "="*30)
+    print("FINAL LEARNED PATTERN")
+    print("="*30)
+    print(f"A tree is edible IF: {final_rule}")
